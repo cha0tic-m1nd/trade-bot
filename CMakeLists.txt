@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(json)
 
 target_link_libraries(tradebot PRIVATE nlohmann_json::nlohmann_json)
 
-set_property(TARGET tradebot PROPERTY CXX_STANDARD 20)
+set_property(TARGET tradebot PROPERTY CXX_STANDARD 23)
 
 # Enabling most errors
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
