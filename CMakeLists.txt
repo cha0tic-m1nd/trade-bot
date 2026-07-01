@@ -6,7 +6,7 @@ if (POLICY CMP0141)
 endif()
 
 project("TradeBot")
-add_executable(tradebot "conf-src/sanitizers_configure.cpp" "src/main.cpp" "src/indicators.cpp" "src/indicators.h" "src/test.cpp" "src/test.h"  "src/loader.cpp" "src/loader.h")
+add_executable(tradebot "conf-src/sanitizers_configure.cpp" "src/main.cpp" "src/indicators.h" "src/loader.cpp" "src/loader.h")
 # add_executable(tradebot "conf-src/sanitizers_configure.cpp" "src/main.cpp" "src/loader.cpp" "src/loader.h")
 include(FetchContent)
 
@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(json)
 
 target_link_libraries(tradebot PRIVATE nlohmann_json::nlohmann_json)
 
-set_property(TARGET tradebot PROPERTY CXX_STANDARD 20)
+set_property(TARGET tradebot PROPERTY CXX_STANDARD 23)
 
 # Enabling most errors
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")

@@ -103,7 +103,6 @@ void daytest(
 int main()
 {
     DB_manager db;
-    stoch st = stoch(1);
     std::vector<double> _kbase;
     std::vector<double> _dbase;
     _kbase.resize(1);
@@ -113,14 +112,41 @@ int main()
     std::chrono::year_month_day d = std::chrono::year_month_day(std::chrono::year(2026), std::chrono::month(3), std::chrono::day(1));
     std::chrono::year_month_day end = std::chrono::
             year_month_day(std::chrono::year(2026), std::chrono::month(6), std::chrono::day(12));
-    atr at = atr();
+    sma s = sma(50);
     std::vector<candle> c = db.get_range(INDX, "IMOEX2", FRAME_D, "2026-03-01", "2026-06-11");
     for (auto i : c)
     {
         std::cout << i << std::endl;
     }
-    auto json = at.calc(c, 0);
-    std::cout << json << std::endl;
+    std::cout << std::endl;
+    auto sma_ = s.calc(c | std::views::transform(&candle::close));
+
+    std::cout << "sma: ";
+    for (auto i : sma_)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    stoch st = stoch(5);
+
+    auto stoch_ = st.calc(c);
+std::cout << "stoch: ";
+    for (auto i : stoch_)
+    {
+        std::cout << i << " ";
+    } 
+std::cout << std::endl;
+    auto cl = c | std::views::transform(&candle::close);
+    auto hi = c | std::views::transform(&candle::high);
+    auto lo = c | std::views::transform(&candle::low);
+    auto stoch_1 = st.calc(cl, hi, lo);
+    std::cout << "split-data stoch: ";
+    for (auto i : stoch_1)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
     /*
     while (d < end)
     {

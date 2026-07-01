@@ -1,122 +1,45 @@
 #include "indicators.h"
 
-indicator::indicator()
+template <std::ranges::range T1, std::ranges::range T2>
+indicator<T1, T2>::indicator()
 {
     this->length = 0;
 }
 
-sma::sma(unsigned int length, char source = 'c')
+template <std::ranges::range S, std::ranges::range R>
+sma<S, R>::sma(unsigned int length)
 {
     /* source: c = close (default), o = open, l = low, h = high */
     this->length = length;
-    this->source = source;
 }
 
-const nlohmann::json sma::calc(const std::vector<candle>& arr, unsigned int index)
+template <std::ranges::range S, std::ranges::range R>
+R sma<S, R>::calc(S&& source)
 {   
-    nlohmann::json res = nlohmann::json();
-    if (index >= arr.size() || index < length)
-    {
-        return res;
-    }
-    double s = 0;
-    for (unsigned int i = 0; i < length; i++)
-    {
-        s += arr[index - i].get_data(source);
-    }
-    res["sma"] = s / length;
-    return res;
+    return source | std::views::slide(length) | std::views::transform([length](auto&& window){ return std::ranges::fold_left(window, 0., std::plus<double>()) / length;});
 }
 
-const nlohmann::json sma::calc(const std::vector<double>& arr, unsigned int index)
-{
-    nlohmann::json res = nlohmann::json();
-    if (index >= arr.size() || index < length)
-    {
-        return res;
-    }
-    double s = 0;
-    for (unsigned int i = 0; i < length; i++)
-    {
-        s += arr[index - i];
-    }
-    res["sma"] = s / length;
-    return res;
-}
-
-stoch::stoch(unsigned int length)
+template <std::ranges::range S, std::ranges::range R>
+stoch<S, R>::stoch(unsigned int length)
 {
     this->length = length;
 }
 
-const nlohmann::json stoch::calc(const std::vector<candle>& arr, unsigned int index)
-{
-    nlohmann::json res = nlohmann::json();
-    if (index >= arr.size() || index < length)
-    {
-        return res;
-    }
-    double high = arr[index].high, low = arr[index].low;
-    for (unsigned int i = 0; i < length; i++)
-    {
-        high = arr[index - i].high > high ? arr[index - i].high : high;
-        low = arr[index - i].low < low ? arr[index - i].low : low;
-    }
-    res["stoch"] = (arr[index].close - low) / (high - low);
-    return res;
-}
-
-const nlohmann::json stoch::calc(const std::vector<double>& arr, unsigned int index)
-{
-    nlohmann::json res = nlohmann::json();
-    if (index >= arr.size() || index < length)
-    {
-        return res;
-    }
-    double high = arr[index], low = arr[index];
-    for (unsigned int i = 0; i < length; i++)
-    {
-        high = arr[index - i] > high ? arr[index - i] : high;
-        low = arr[index - i] < low ? arr[index - i] : low;
-    }
-    res["stoch"] = (arr[index] - low) / (high - low);
-    return res;
-}
-
-atr::atr()
+template <std::ranges::range S, std::ranges::range R>
+atr<S, R>::atr()
 {
     /* source: o = high - low, h = high - open, l = low - open, c = close - open */
     this->length = 0;
 }
 
-const nlohmann::json atr::calc(const std::vector<candle>& arr, unsigned int index)
-{
-    nlohmann::json res = nlohmann::json();
-    double f, h = 0;
-    for (auto i : arr)
-    {
-        f += i.high - i.low;
-        h += i.high - i.open;
-    }
-    f /= arr.size();
-    h /= arr.size();
-    res["full"] = f;
-    res["high"] = h;
-    res["low"] = h - f;
 
-    /* TODO: add mean-squared deviation */
-    return res;
-}
-
-const nlohmann::json atr::calc(const std::vector<double>& arr, unsigned int index)
+template <std::ranges::range S, std::ranges::range R>
+R atr<S, R>::calc(S&& source)
 {
-    nlohmann::json res = nlohmann::json();
-    double l, h = arr[0];
-    for (auto i : arr)
-    {
-        h = i > h ? i : h;
-        l = i < h ? i : l;
-    }
-    res["full"] = h - l;
+
+    source | std::views::slide(length) | std::views::transform([length](auto&& window){
+
+        return std::ranges::fold_left(window, 0., std::plus<double>()) / length;});
+    res["full"] = std::ranges::max(arr) - std::ranges::min(arr);
     return res;
 }

@@ -8,6 +8,7 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <ranges>
 
 constexpr char FRAME_M1 = 0, FRAME_M5 = 1, FRAME_M15 = 2, FRAME_M30 = 3, FRAME_H1 = 4, FRAME_H4 = 5,
                FRAME_D = 6;
