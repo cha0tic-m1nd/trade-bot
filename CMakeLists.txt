@@ -6,7 +6,7 @@ if (POLICY CMP0141)
 endif()
 
 project("TradeBot")
-add_executable(tradebot "conf-src/sanitizers_configure.cpp" "src/main.cpp" "src/indicators.cpp" "src/indicators.h" "src/test.cpp" "src/test.h"  "src/loader.cpp" "src/loader.h")
+add_executable(tradebot "conf-src/sanitizers_configure.cpp" "src/main.cpp" "src/indicators.h" "src/loader.cpp" "src/loader.h")
 # add_executable(tradebot "conf-src/sanitizers_configure.cpp" "src/main.cpp" "src/loader.cpp" "src/loader.h")
 include(FetchContent)
 
